@@ -388,6 +388,43 @@
         background: linear-gradient(135deg, #e11d48 0%, #fb7185 100%);
       }
 
+      .size-pills {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .size-pill-option {
+        position: relative;
+        cursor: pointer;
+      }
+
+      .size-pill-option input {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .size-pill-option span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.26);
+        font-size: 12px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      .size-pill-option input:checked + span {
+        border-color: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+      }
+
       .sr-only {
         position: absolute;
         width: 1px;
@@ -505,6 +542,36 @@
                         <input type="radio" name="theme" value="berry">
                         <span aria-hidden="true"></span>
                         <span class="sr-only">ベリー</span>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="field-head">
+                    <label>サイズ</label>
+                    <div
+                      id="bubbleSizeSelect"
+                      class="size-pills"
+                      role="radiogroup"
+                      aria-label="サイズ"
+                    >
+                      <label class="size-pill-option">
+                        <input type="radio" name="bubbleSize" value="nano">
+                        <span>nano</span>
+                      </label>
+                      <label class="size-pill-option">
+                        <input type="radio" name="bubbleSize" value="micro">
+                        <span>micro</span>
+                      </label>
+                      <label class="size-pill-option">
+                        <input type="radio" name="bubbleSize" value="kilo">
+                        <span>kilo</span>
+                      </label>
+                      <label class="size-pill-option">
+                        <input type="radio" name="bubbleSize" value="mega">
+                        <span>mega</span>
+                      </label>
+                      <label class="size-pill-option">
+                        <input type="radio" name="bubbleSize" value="giga" checked>
+                        <span>giga</span>
                       </label>
                     </div>
                   </div>
@@ -713,16 +780,21 @@
           ),
           showDetail: !['0', 'false', 'off'].includes(
             String(params.get('showDetail') || 'true').trim().toLowerCase()
-          )
+          ),
+          bubbleSize: String(params.get('bubbleSize') || params.get('size') || 'giga').trim()
         };
       }
 
+      const BUBBLE_SIZES = ['nano', 'micro', 'kilo', 'mega', 'giga'];
+
       function getEditorState() {
         const selectedTheme = document.querySelector('input[name="theme"]:checked');
+        const selectedBubbleSize = document.querySelector('input[name="bubbleSize"]:checked');
         const headerInput = document.getElementById('headerInput');
 
         return {
           theme: selectedTheme ? selectedTheme.value : 'sunset',
+          bubbleSize: selectedBubbleSize ? selectedBubbleSize.value : 'giga',
           headerTitle: headerInput.value.trim(),
           headerTitleEdited: headerInput.dataset.edited === '1',
           date: document.getElementById('dateInput').value.trim(),
@@ -744,6 +816,15 @@
 
         if (nextThemeInput) {
           nextThemeInput.checked = true;
+        }
+
+        const nextBubbleSize = BUBBLE_SIZES.includes(state.bubbleSize) ? state.bubbleSize : 'giga';
+        const nextBubbleSizeInput = document.querySelector(
+          `input[name="bubbleSize"][value="${nextBubbleSize}"]`
+        );
+
+        if (nextBubbleSizeInput) {
+          nextBubbleSizeInput.checked = true;
         }
 
         const headerInput = document.getElementById('headerInput');
@@ -774,6 +855,7 @@
           || state.theme !== 'sunset'
           || state.showDate !== true
           || state.showDetail !== true
+          || state.bubbleSize !== 'giga'
         );
       }
 
@@ -838,6 +920,7 @@
 
           return {
             theme: String(parsedState.theme || 'sunset').trim() || 'sunset',
+            bubbleSize: BUBBLE_SIZES.includes(parsedState.bubbleSize) ? parsedState.bubbleSize : 'giga',
             headerTitle:
               String(parsedState.headerTitle || DEFAULT_HEADER_TITLE).trim()
               || DEFAULT_HEADER_TITLE,
@@ -1073,7 +1156,7 @@
             altText: buildAltText(state),
             contents: {
               type: 'bubble',
-              size: 'giga',
+              size: BUBBLE_SIZES.includes(state.bubbleSize) ? state.bubbleSize : 'giga',
               header: {
                 type: 'box',
                 layout: 'vertical',
@@ -1152,6 +1235,12 @@
         document.querySelectorAll('input[name="theme"]').forEach(element => {
           element.addEventListener('change', () => {
             updateFieldCounts();
+            renderPreview(getEditorState());
+          });
+        });
+
+        document.querySelectorAll('input[name="bubbleSize"]').forEach(element => {
+          element.addEventListener('change', () => {
             renderPreview(getEditorState());
           });
         });
