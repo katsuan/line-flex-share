@@ -89,18 +89,50 @@
         color: #fff;
       }
 
+      .bubble-input {
+        display: block;
+        width: 100%;
+        border: 1px dashed transparent;
+        border-radius: 10px;
+        background: transparent;
+        margin: -3px -5px;
+        padding: 2px 5px;
+        font: inherit;
+        color: inherit;
+        text-align: inherit;
+        resize: none;
+      }
+
+      .bubble-input::placeholder {
+        color: currentColor;
+        opacity: 0.4;
+      }
+
+      .bubble-input:hover {
+        border-color: currentColor;
+        opacity: 0.85;
+      }
+
+      .bubble-input:focus {
+        outline: none;
+        border-style: solid;
+        border-color: currentColor;
+      }
+
+      .preview-highlight {
+        outline: 2px solid var(--accent-strong);
+        outline-offset: 2px;
+        border-radius: 10px;
+      }
+
+      .preview-peek {
+        opacity: 0.6;
+      }
+
       .bubble-header-title {
         font-size: 22px;
         font-weight: 800;
         line-height: 1.2;
-      }
-
-      .bubble-header-title.is-placeholder,
-      .bubble-header-date.is-placeholder,
-      .bubble-title.is-placeholder,
-      .bubble-detail.is-placeholder,
-      .bubble-action.is-placeholder {
-        opacity: 0.34;
       }
 
       .bubble-header-date {
@@ -125,6 +157,7 @@
       }
 
       .bubble-detail {
+        min-height: 3.4em;
         padding: 14px;
         border-radius: 16px;
         background: #fff7ed;
@@ -135,7 +168,7 @@
       }
 
       .bubble-action {
-        display: inline-flex;
+        display: flex;
         align-items: center;
         justify-content: center;
         min-height: 48px;
@@ -143,15 +176,20 @@
         border-radius: 16px;
         background: #f59e0b;
         color: #ffffff;
+      }
+
+      .bubble-action-label {
         font-size: 14px;
         font-weight: 800;
         text-align: center;
-        text-decoration: none;
       }
 
       .bubble-action.is-disabled {
         background: #cbd5e1 !important;
         color: #64748b;
+      }
+
+      .bubble-action.is-disabled .bubble-input {
         pointer-events: none;
       }
 
@@ -246,6 +284,27 @@
       .field {
         display: grid;
         gap: 8px;
+      }
+
+      .field + .field {
+        margin-top: 16px;
+      }
+
+      .card-settings-accordion > summary {
+        cursor: pointer;
+        list-style: none;
+      }
+
+      .card-settings-accordion > summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .card-settings-accordion > summary::before {
+        content: '▾ ';
+      }
+
+      .card-settings-accordion:not([open]) > summary::before {
+        content: '▸ ';
       }
 
       .field-head {
@@ -402,6 +461,22 @@
         background: linear-gradient(135deg, #e11d48 0%, #fb7185 100%);
       }
 
+      .theme-pill--custom span {
+        background: conic-gradient(
+          from 180deg,
+          #f59e0b,
+          #ec4899,
+          #6366f1,
+          #10b981,
+          #f59e0b
+        );
+      }
+
+      #customColorInput {
+        pointer-events: auto;
+        cursor: pointer;
+      }
+
       .size-pills {
         display: flex;
         gap: 6px;
@@ -495,212 +570,165 @@
     <main class="page">
       <section class="hero">
         <p>
-          タイトルと詳細を整えて、そのまま LINE の Flex Message として共有します。
+          プレビューの文字は直接タップして編集できます。内容を修正して、そのまま LINE で送信します。
         </p>
       </section>
 
       <section class="card">
+        <div class="panel">
+          <details class="section-block card-settings-accordion" open>
+            <summary class="section-title">カード設定</summary>
+            <div class="field field--compact">
+              <div class="field-head">
+                <label>サイズ</label>
+                <div
+                  id="bubbleSizeSelect"
+                  class="size-pills"
+                  role="radiogroup"
+                  aria-label="サイズ"
+                >
+                  <label class="size-pill-option">
+                    <input type="radio" name="bubbleSize" value="nano">
+                    <span>nano</span>
+                  </label>
+                  <label class="size-pill-option">
+                    <input type="radio" name="bubbleSize" value="micro">
+                    <span>micro</span>
+                  </label>
+                  <label class="size-pill-option">
+                    <input type="radio" name="bubbleSize" value="kilo">
+                    <span>kilo</span>
+                  </label>
+                  <label class="size-pill-option">
+                    <input type="radio" name="bubbleSize" value="mega">
+                    <span>mega</span>
+                  </label>
+                  <label class="size-pill-option">
+                    <input type="radio" name="bubbleSize" value="giga" checked>
+                    <span>giga</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="field field--compact">
+              <div class="field-head">
+                <label>カラー</label>
+                <div
+                  id="themeSelect"
+                  class="theme-pills"
+                  role="radiogroup"
+                  aria-label="カラー"
+                >
+                  <label class="theme-pill theme-pill--sunset">
+                    <input type="radio" name="theme" value="sunset" checked>
+                    <span aria-hidden="true"></span>
+                    <span class="sr-only">サンセット</span>
+                  </label>
+                  <label class="theme-pill theme-pill--sky">
+                    <input type="radio" name="theme" value="sky">
+                    <span aria-hidden="true"></span>
+                    <span class="sr-only">スカイ</span>
+                  </label>
+                  <label class="theme-pill theme-pill--leaf">
+                    <input type="radio" name="theme" value="leaf">
+                    <span aria-hidden="true"></span>
+                    <span class="sr-only">リーフ</span>
+                  </label>
+                  <label class="theme-pill theme-pill--berry">
+                    <input type="radio" name="theme" value="berry">
+                    <span aria-hidden="true"></span>
+                    <span class="sr-only">ベリー</span>
+                  </label>
+                  <label class="theme-pill theme-pill--custom">
+                    <input type="radio" name="theme" value="custom" tabindex="-1">
+                    <input
+                      id="customColorInput"
+                      type="color"
+                      value="#f59e0b"
+                      aria-label="カスタムカラーを選ぶ"
+                    >
+                    <span aria-hidden="true"></span>
+                    <span class="sr-only">カスタム</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+
         <div class="preview">
           <div class="bubble">
             <div id="bubbleHeader" class="bubble-header">
-              <div id="bubbleHeaderTitle" class="bubble-header-title">
-                みんなに共有
-              </div>
-              <div id="bubbleHeaderDate" class="bubble-header-date"></div>
+              <input
+                id="headerInput"
+                class="bubble-input bubble-header-title"
+                type="text"
+                placeholder="みんなに共有"
+              >
+              <input
+                id="dateInput"
+                class="bubble-input bubble-header-date"
+                type="text"
+                placeholder="2026.08.12 共有メモ"
+              >
             </div>
             <div class="bubble-body">
-              <div id="bubbleTitle" class="bubble-title">共有タイトル</div>
-              <div id="bubbleDetail" class="bubble-detail hidden"></div>
-              <a
-                id="bubbleAction"
-                class="bubble-action hidden"
-                href="#"
-                target="_blank"
-                rel="noreferrer"
-              ></a>
+              <input
+                id="titleInput"
+                class="bubble-input bubble-title"
+                type="text"
+                placeholder="本文タイトル"
+              >
+              <textarea
+                id="detailInput"
+                class="bubble-input bubble-detail hidden"
+                placeholder="補足やメッセージを入力"
+              ></textarea>
+              <div id="bubbleAction" class="bubble-action hidden">
+                <input
+                  id="actionLabelInput"
+                  class="bubble-input bubble-action-label"
+                  type="text"
+                  placeholder="詳しく見る"
+                >
+              </div>
             </div>
           </div>
-          <p class="preview-note">※ 見え方はイメージです。実際の表示はご利用端末やカードサイズによって異なります。</p>
+          <p class="preview-note">※ 見え方はイメージです。実際の表示はご利用端末やカードサイズによって異なります。グレーの文字部分はタップすると入力できます。</p>
         </div>
 
         <div class="panel">
+          <div id="actionFieldsWrap" class="section-block hidden">
+            <p class="section-title">リンク詳細</p>
+            <div class="field">
+              <label for="actionUrlInput">URL</label>
+              <input
+                id="actionUrlInput"
+                class="input"
+                type="url"
+                placeholder="https://example.com"
+              >
+            </div>
+          </div>
+
           <div id="status" class="status"></div>
 
-          <div class="grid">
-            <div class="section-block">
-              <p class="section-title">カードサイズ</p>
-              <p class="section-note">トーク上でのカード全体の大きさです。ヘッダー・本文・リンクボタンはこのカードの中身です。</p>
-              <div class="field field--compact">
-                <div class="field-head">
-                  <label>サイズ</label>
-                  <div
-                    id="bubbleSizeSelect"
-                    class="size-pills"
-                    role="radiogroup"
-                    aria-label="サイズ"
-                  >
-                    <label class="size-pill-option">
-                      <input type="radio" name="bubbleSize" value="nano">
-                      <span>nano</span>
-                    </label>
-                    <label class="size-pill-option">
-                      <input type="radio" name="bubbleSize" value="micro">
-                      <span>micro</span>
-                    </label>
-                    <label class="size-pill-option">
-                      <input type="radio" name="bubbleSize" value="kilo">
-                      <span>kilo</span>
-                    </label>
-                    <label class="size-pill-option">
-                      <input type="radio" name="bubbleSize" value="mega">
-                      <span>mega</span>
-                    </label>
-                    <label class="size-pill-option">
-                      <input type="radio" name="bubbleSize" value="giga" checked>
-                      <span>giga</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              <div id="headerSection" class="section-block section-block--header">
-                <div class="section-head">
-                  <p class="section-title section-title--light">ヘッダー</p>
-                  <div class="field field--compact">
-                    <div class="field-head">
-                      <label>カラー</label>
-                      <div
-                        id="themeSelect"
-                        class="theme-pills"
-                        role="radiogroup"
-                        aria-label="カラー"
-                      >
-                        <label class="theme-pill theme-pill--sunset">
-                          <input type="radio" name="theme" value="sunset" checked>
-                          <span aria-hidden="true"></span>
-                          <span class="sr-only">サンセット</span>
-                        </label>
-                        <label class="theme-pill theme-pill--sky">
-                          <input type="radio" name="theme" value="sky">
-                          <span aria-hidden="true"></span>
-                          <span class="sr-only">スカイ</span>
-                        </label>
-                        <label class="theme-pill theme-pill--leaf">
-                          <input type="radio" name="theme" value="leaf">
-                          <span aria-hidden="true"></span>
-                          <span class="sr-only">リーフ</span>
-                        </label>
-                        <label class="theme-pill theme-pill--berry">
-                          <input type="radio" name="theme" value="berry">
-                          <span aria-hidden="true"></span>
-                          <span class="sr-only">ベリー</span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="grid">
-                  <div class="field">
-                    <div class="field-label-row">
-                      <label for="headerInput">タイトル</label>
-                      <div class="field-label-row">
-                        <div class="field-note">15文字以内が目安</div>
-                        <div id="headerCount" class="field-count">0 / 15</div>
-                      </div>
-                    </div>
-                    <input
-                      id="headerInput"
-                      class="input"
-                      type="text"
-                      value="みんなに共有"
-                      placeholder="タイトル"
-                    >
-                  </div>
-
-                  <div class="field">
-                    <div class="field-head">
-                      <label for="dateInput">サブタイトル</label>
-                      <label class="toggle toggle--light">
-                        <input id="showDateToggle" type="checkbox" checked>
-                        表示
-                      </label>
-                    </div>
-                    <input
-                      id="dateInput"
-                      class="input"
-                      type="text"
-                      placeholder="2026.08.12 共有メモ"
-                    >
-                  </div>
-                </div>
-              </div>
-
-              <div class="section-block">
-                <p class="section-title">本文</p>
-                <div class="grid">
-                  <div class="field">
-                    <label for="titleInput">本文タイトル</label>
-                    <input
-                      id="titleInput"
-                      class="input"
-                      type="text"
-                      placeholder="共有したい内容"
-                    >
-                  </div>
-
-                  <div class="field">
-                    <div class="field-head">
-                      <label for="detailInput">詳細</label>
-                      <label class="toggle">
-                        <input id="showDetailToggle" type="checkbox" checked>
-                        表示
-                      </label>
-                    </div>
-                    <textarea
-                      id="detailInput"
-                      class="textarea"
-                      placeholder="補足やメッセージを入力"
-                    ></textarea>
-                  </div>
-                </div>
-              </div>
-
-              <div class="section-block">
-                <p class="section-title">リンクボタン</p>
-                <div class="grid">
-                  <div class="field">
-                    <div class="field-head">
-                      <label for="actionUrlInput">URLボタン</label>
-                      <label class="toggle">
-                        <input id="showActionToggle" type="checkbox">
-                        表示
-                      </label>
-                    </div>
-                  </div>
-
-                  <div id="actionFieldsWrap" class="grid hidden">
-                    <div class="field">
-                      <label for="actionLabelInput">ボタン文言</label>
-                      <input
-                        id="actionLabelInput"
-                        class="input"
-                        type="text"
-                        placeholder="詳しく見る"
-                      >
-                    </div>
-
-                    <div class="field">
-                      <label for="actionUrlInput">URL</label>
-                      <input
-                        id="actionUrlInput"
-                        class="input"
-                        type="url"
-                        placeholder="https://example.com"
-                      >
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div class="section-block">
+            <p class="section-title">表示設定</p>
+            <div class="toggle-row">
+              <label class="toggle">
+                <input id="showDateToggle" type="checkbox" checked>
+                サブタイトル
+              </label>
+              <label class="toggle">
+                <input id="showDetailToggle" type="checkbox" checked>
+                詳細
+              </label>
+              <label class="toggle">
+                <input id="showActionToggle" type="checkbox">
+                リンクボタン
+              </label>
             </div>
           </div>
 
@@ -720,7 +748,26 @@
       let shareEnvironmentReady = false;
       let lastBuiltShareMessages = null;
 
-      function getThemePalette(theme) {
+      const DEFAULT_CUSTOM_COLOR = '#f59e0b';
+
+      function normalizeHexColor(value) {
+        const match = String(value || '').trim().match(/^#?([0-9a-fA-F]{6})$/);
+        return match ? `#${match[1]}` : DEFAULT_CUSTOM_COLOR;
+      }
+
+      function lightenHex(hex, amount) {
+        const clean = normalizeHexColor(hex).slice(1);
+        const num = parseInt(clean, 16);
+        const mix = (c) => Math.round(c + (255 - c) * amount);
+        const r = mix((num >> 16) & 255);
+        const g = mix((num >> 8) & 255);
+        const b = mix(num & 255);
+        return `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+      }
+
+      function getThemePalette(state) {
+        const theme = state.theme;
+
         switch (theme) {
           case 'sky':
             return {
@@ -746,6 +793,16 @@
               detailBg: '#fff1f2',
               detailText: '#be123c'
             };
+          case 'custom': {
+            const base = normalizeHexColor(state.customColor);
+            return {
+              pageBg:
+                `radial-gradient(circle at top, ${lightenHex(base, 0.7)} 0%, #fff7ed 40%, #fffbeb 100%)`,
+              headerBg: `linear-gradient(135deg, ${base} 0%, ${lightenHex(base, 0.35)} 100%)`,
+              detailBg: lightenHex(base, 0.88),
+              detailText: base
+            };
+          }
           case 'sunset':
           default:
             return {
@@ -785,7 +842,7 @@
           hasIncomingActionParam:
             params.has('actionUrl') || params.has('url') || params.has('buttonLabel'),
           theme: String(params.get('theme') || 'sunset').trim(),
-          headerTitle: String(params.get('headerTitle') || 'みんなに共有').trim(),
+          headerTitle: String(params.get('headerTitle') || '').trim(),
           date: String(params.get('date') || '').trim(),
           title: String(params.get('title') || '').trim(),
           detail: String(params.get('detail') || params.get('content') || '').trim(),
@@ -804,11 +861,13 @@
           showDetail: !['0', 'false', 'off'].includes(
             String(params.get('showDetail') || 'true').trim().toLowerCase()
           ),
-          bubbleSize: String(params.get('bubbleSize') || params.get('size') || 'giga').trim()
+          bubbleSize: String(params.get('bubbleSize') || params.get('size') || 'giga').trim(),
+          customColor: normalizeHexColor(params.get('customColor') || params.get('color') || DEFAULT_CUSTOM_COLOR)
         };
       }
 
       const BUBBLE_SIZES = ['nano', 'micro', 'kilo', 'mega', 'giga'];
+      const THEMES = ['sunset', 'sky', 'leaf', 'berry', 'custom'];
 
       function getEditorState() {
         const selectedTheme = document.querySelector('input[name="theme"]:checked');
@@ -817,9 +876,9 @@
 
         return {
           theme: selectedTheme ? selectedTheme.value : 'sunset',
+          customColor: normalizeHexColor(document.getElementById('customColorInput').value),
           bubbleSize: selectedBubbleSize ? selectedBubbleSize.value : 'giga',
           headerTitle: headerInput.value.trim(),
-          headerTitleEdited: headerInput.dataset.edited === '1',
           date: document.getElementById('dateInput').value.trim(),
           title: document.getElementById('titleInput').value.trim(),
           detail: document.getElementById('detailInput').value.trim(),
@@ -832,7 +891,7 @@
       }
 
       function applyStateToEditor(state) {
-        const nextTheme = state.theme || 'sunset';
+        const nextTheme = THEMES.includes(state.theme) ? state.theme : 'sunset';
         const nextThemeInput = document.querySelector(
           `input[name="theme"][value="${nextTheme}"]`
         );
@@ -840,6 +899,8 @@
         if (nextThemeInput) {
           nextThemeInput.checked = true;
         }
+
+        document.getElementById('customColorInput').value = normalizeHexColor(state.customColor);
 
         const nextBubbleSize = BUBBLE_SIZES.includes(state.bubbleSize) ? state.bubbleSize : 'giga';
         const nextBubbleSizeInput = document.querySelector(
@@ -851,8 +912,7 @@
         }
 
         const headerInput = document.getElementById('headerInput');
-        headerInput.value = state.headerTitle || DEFAULT_HEADER_TITLE;
-        headerInput.dataset.edited = state.headerTitleEdited === true ? '1' : '0';
+        headerInput.value = state.headerTitle || '';
         document.getElementById('dateInput').value = state.date || '';
         document.getElementById('titleInput').value = state.title || '';
         document.getElementById('detailInput').value = state.detail || '';
@@ -863,7 +923,6 @@
         document.getElementById('showDateToggle').checked = state.showDate !== false;
         document.getElementById('showDetailToggle').checked =
           state.showDetail !== false;
-        updateFieldCounts();
       }
 
       function hasQueryOverrides(state) {
@@ -874,11 +933,12 @@
           || state.actionLabel
           || state.actionUrl
           || state.showAction === true
-          || state.headerTitle !== 'みんなに共有'
+          || state.headerTitle
           || state.theme !== 'sunset'
           || state.showDate !== true
           || state.showDetail !== true
           || state.bubbleSize !== 'giga'
+          || state.customColor !== DEFAULT_CUSTOM_COLOR
         );
       }
 
@@ -917,16 +977,6 @@
         return state.actionLabel || '詳しく見る';
       }
 
-      function setPreviewText(element, text, isPlaceholder) {
-        element.textContent = text;
-        element.classList.toggle('is-placeholder', isPlaceholder);
-      }
-
-      function updateFieldCounts() {
-        const headerLength = document.getElementById('headerInput').value.length;
-        document.getElementById('headerCount').textContent = `${headerLength} / 15`;
-      }
-
       function loadLastSentState() {
         try {
           const rawState = window.localStorage.getItem(STORAGE_KEY);
@@ -942,12 +992,10 @@
           }
 
           return {
-            theme: String(parsedState.theme || 'sunset').trim() || 'sunset',
+            theme: THEMES.includes(parsedState.theme) ? parsedState.theme : 'sunset',
+            customColor: normalizeHexColor(parsedState.customColor),
             bubbleSize: BUBBLE_SIZES.includes(parsedState.bubbleSize) ? parsedState.bubbleSize : 'giga',
-            headerTitle:
-              String(parsedState.headerTitle || DEFAULT_HEADER_TITLE).trim()
-              || DEFAULT_HEADER_TITLE,
-            headerTitleEdited: parsedState.headerTitleEdited === true,
+            headerTitle: String(parsedState.headerTitle || '').trim(),
             date: String(parsedState.date || '').trim(),
             title: String(parsedState.title || '').trim(),
             detail: String(parsedState.detail || '').trim(),
@@ -1034,8 +1082,7 @@
       function updateFieldVisibility(state) {
         const dateInput = document.getElementById('dateInput');
         const detailInput = document.getElementById('detailInput');
-        const actionLabelInput = document.getElementById('actionLabelInput');
-        const actionUrlInput = document.getElementById('actionUrlInput');
+        const bubbleAction = document.getElementById('bubbleAction');
         const actionFieldsWrap = document.getElementById('actionFieldsWrap');
 
         dateInput.classList.toggle('hidden', state.showDate === false);
@@ -1044,56 +1091,28 @@
         detailInput.classList.toggle('hidden', state.showDetail === false);
         detailInput.disabled = state.showDetail === false;
 
+        bubbleAction.classList.toggle('hidden', state.showAction !== true);
+        document.getElementById('actionLabelInput').disabled = state.showAction !== true;
+
         actionFieldsWrap.classList.toggle('hidden', state.showAction !== true);
-        actionLabelInput.disabled = state.showAction !== true;
-        actionUrlInput.disabled = state.showAction !== true;
+        document.getElementById('actionUrlInput').disabled = state.showAction !== true;
       }
 
       function renderPreview(state) {
-        const palette = getThemePalette(state.theme);
+        const palette = getThemePalette(state);
         document.body.style.background = palette.pageBg;
         document.getElementById('bubbleHeader').style.background = palette.headerBg;
-        document.getElementById('headerSection').style.background = palette.headerBg;
-        const isDefaultHeaderPlaceholder =
-          !state.headerTitle
-          || (
-            state.headerTitle === DEFAULT_HEADER_TITLE
-            && state.headerTitleEdited !== true
-          );
-        setPreviewText(
-          document.getElementById('bubbleHeaderTitle'),
-          state.headerTitle || DEFAULT_HEADER_TITLE,
-          isDefaultHeaderPlaceholder
-        );
 
-        const dateNode = document.getElementById('bubbleHeaderDate');
-        setPreviewText(dateNode, state.date || 'サブタイトル', !state.date);
-        dateNode.classList.toggle('hidden', state.showDate === false);
+        const detailInput = document.getElementById('detailInput');
+        detailInput.style.background = palette.detailBg;
+        detailInput.style.color = palette.detailText;
 
-        setPreviewText(
-          document.getElementById('bubbleTitle'),
-          state.title || '本文タイトル',
-          !state.title
-        );
-
-        const detailNode = document.getElementById('bubbleDetail');
-        setPreviewText(detailNode, state.detail || '詳細', !state.detail);
-        detailNode.style.background = palette.detailBg;
-        detailNode.style.color = palette.detailText;
-        detailNode.classList.toggle(
-          'hidden',
-          state.showDetail === false
-        );
-
-        const actionNode = document.getElementById('bubbleAction');
+        const bubbleAction = document.getElementById('bubbleAction');
         const actionUrl = sanitizeUrl(state.actionUrl);
-        const shouldShowAction = state.showAction === true;
         const hasActionUrl = Boolean(actionUrl);
-        setPreviewText(actionNode, getActionLabel(state), !state.actionLabel);
-        actionNode.href = hasActionUrl ? actionUrl : '#';
-        actionNode.style.background = themeStartColor(state.theme);
-        actionNode.classList.toggle('hidden', !shouldShowAction);
-        actionNode.classList.toggle('is-disabled', !hasActionUrl);
+        bubbleAction.style.background = themeStartColor(state);
+        bubbleAction.classList.toggle('is-disabled', !hasActionUrl);
+
         updateFieldVisibility(state);
         updateShareButtonState(state);
       }
@@ -1106,12 +1125,12 @@
       }
 
       function buildShareMessages(state) {
-        const palette = getThemePalette(state.theme);
+        const palette = getThemePalette(state);
         const bodyContents = [];
         const headerContents = [
           {
             type: 'text',
-            text: state.headerTitle || 'みんなに共有',
+            text: state.headerTitle || DEFAULT_HEADER_TITLE,
             color: '#FFFFFF',
             weight: 'bold',
             size: 'lg',
@@ -1164,7 +1183,7 @@
           bodyContents.push({
             type: 'button',
             style: 'primary',
-            color: themeStartColor(state.theme),
+            color: themeStartColor(state),
             action: {
               type: 'uri',
               label: getActionLabel(state),
@@ -1183,7 +1202,7 @@
               header: {
                 type: 'box',
                 layout: 'vertical',
-                background: themeGradient(state.theme),
+                background: themeGradient(state),
                 paddingAll: '16px',
                 contents: headerContents
               },
@@ -1202,31 +1221,37 @@
         return messages;
       }
 
-      function themeStartColor(theme) {
-        switch (theme) {
+      function themeStartColor(state) {
+        switch (state.theme) {
           case 'sky':
             return '#2563EB';
           case 'leaf':
             return '#16A34A';
           case 'berry':
             return '#E11D48';
+          case 'custom':
+            return normalizeHexColor(state.customColor);
           case 'sunset':
           default:
             return '#F59E0B';
         }
       }
 
-      function themeGradient(theme) {
+      function themeGradient(state) {
         // Flexのlinear-gradient角度はCSSのlinear-gradient(Xdeg, ...)と同じ向きなので、
         // 画面プレビューのCSS(135deg, start 0%, end 100%)とそのまま揃えられる。
         const colors = (() => {
-          switch (theme) {
+          switch (state.theme) {
             case 'sky':
               return { startColor: '#2563EB', endColor: '#06B6D4' };
             case 'leaf':
               return { startColor: '#16A34A', endColor: '#10B981' };
             case 'berry':
               return { startColor: '#E11D48', endColor: '#FB7185' };
+            case 'custom': {
+              const base = normalizeHexColor(state.customColor);
+              return { startColor: base, endColor: lightenHex(base, 0.35) };
+            }
             case 'sunset':
             default:
               return { startColor: '#F59E0B', endColor: '#FB7185' };
@@ -1254,35 +1279,15 @@
           'showDetailToggle'
         ].forEach(id => {
           const element = document.getElementById(id);
-          const eventName =
-            element.tagName === 'SELECT' || element.type === 'checkbox'
-              ? 'change'
-              : 'input';
+          const eventName = element.type === 'checkbox' ? 'change' : 'input';
 
           element.addEventListener(eventName, () => {
-            if (id === 'headerInput') {
-              element.dataset.edited = '1';
-            }
-            updateFieldCounts();
             renderPreview(getEditorState());
           });
-
-          if (element.type === 'checkbox') {
-            element.addEventListener('input', () => {
-              updateFieldCounts();
-              renderPreview(getEditorState());
-            });
-
-            element.addEventListener('click', () => {
-              updateFieldCounts();
-              renderPreview(getEditorState());
-            });
-          }
         });
 
         document.querySelectorAll('input[name="theme"]').forEach(element => {
           element.addEventListener('change', () => {
-            updateFieldCounts();
             renderPreview(getEditorState());
           });
         });
@@ -1290,6 +1295,42 @@
         document.querySelectorAll('input[name="bubbleSize"]').forEach(element => {
           element.addEventListener('change', () => {
             renderPreview(getEditorState());
+          });
+        });
+
+        const customColorInput = document.getElementById('customColorInput');
+        customColorInput.addEventListener('input', () => {
+          const customThemeInput = document.querySelector('input[name="theme"][value="custom"]');
+          if (customThemeInput) {
+            customThemeInput.checked = true;
+          }
+          renderPreview(getEditorState());
+        });
+
+        [
+          ['showDateToggle', 'dateInput'],
+          ['showDetailToggle', 'detailInput'],
+          ['showActionToggle', 'bubbleAction']
+        ].forEach(([toggleId, targetId]) => {
+          const toggleInput = document.getElementById(toggleId);
+          const toggleLabel = toggleInput.closest('.toggle');
+          const target = document.getElementById(targetId);
+
+          if (!toggleLabel || !target) return;
+
+          toggleLabel.addEventListener('mouseenter', () => {
+            target.classList.add('preview-highlight');
+            if (!toggleInput.checked) {
+              target.classList.add('preview-peek');
+              target.classList.remove('hidden');
+            }
+          });
+          toggleLabel.addEventListener('mouseleave', () => {
+            target.classList.remove('preview-highlight');
+            if (target.classList.contains('preview-peek')) {
+              target.classList.remove('preview-peek');
+              target.classList.toggle('hidden', !toggleInput.checked);
+            }
           });
         });
       }
