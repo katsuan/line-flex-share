@@ -393,6 +393,7 @@
 
       .toggle-row {
         display: flex;
+        justify-content: flex-end;
         gap: 10px;
         flex-wrap: wrap;
       }
@@ -734,7 +735,7 @@
                 id="dateInput"
                 class="bubble-input bubble-header-date"
                 type="text"
-                placeholder="サブタイトル"
+                placeholder="サブタイトル（表示設定でOFF可）"
               >
             </div>
             <div class="bubble-body">
@@ -748,7 +749,7 @@
                 id="detailInput"
                 class="bubble-input bubble-detail hidden"
                 rows="1"
-                placeholder="詳細"
+                placeholder="詳細（表示設定でOFF可）"
               ></textarea>
               <div id="bubbleAction" class="bubble-action hidden">
                 <input
