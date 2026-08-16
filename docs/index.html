@@ -533,6 +533,8 @@
 
       .actions {
         margin-top: 16px;
+        display: grid;
+        gap: 8px;
       }
 
       .button {
@@ -550,6 +552,18 @@
       .button[disabled] {
         background: #cbd5e1;
         cursor: not-allowed;
+      }
+
+      .button-secondary {
+        width: 100%;
+        border: 1px solid var(--card-line);
+        border-radius: 999px;
+        padding: 10px 18px;
+        background: transparent;
+        color: var(--sub);
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
       }
 
       .note {
@@ -695,7 +709,7 @@
               </div>
             </div>
           </div>
-          <p class="preview-note">※ 見え方はイメージです。実際の表示はご利用端末やカードサイズによって異なります。グレーの文字部分はタップすると入力できます。</p>
+          <p class="preview-note">※ 見え方はイメージです。実際の表示はご利用端末やカードサイズによって異なります。</p>
         </div>
 
         <div class="panel">
@@ -733,6 +747,9 @@
           </div>
 
           <div class="actions">
+            <button id="resetButton" class="button-secondary" type="button">
+              入力をリセット
+            </button>
             <button id="shareButton" class="button" type="button">
               LINEで送信する
             </button>
@@ -923,6 +940,35 @@
         document.getElementById('showDateToggle').checked = state.showDate !== false;
         document.getElementById('showDetailToggle').checked =
           state.showDetail !== false;
+      }
+
+      const BLANK_STATE = {
+        theme: 'sunset',
+        customColor: DEFAULT_CUSTOM_COLOR,
+        bubbleSize: 'giga',
+        headerTitle: '',
+        date: '',
+        title: '',
+        detail: '',
+        actionLabel: '',
+        actionUrl: '',
+        showAction: false,
+        showDate: true,
+        showDetail: true
+      };
+
+      function resetEditor() {
+        applyStateToEditor(BLANK_STATE);
+
+        try {
+          window.localStorage.removeItem(STORAGE_KEY);
+        } catch (error) {
+          console.error(error);
+        }
+
+        renderPreview(getEditorState());
+        updateShareButtonState(getEditorState());
+        setStatus('入力をリセットしました。', false);
       }
 
       function hasQueryOverrides(state) {
@@ -1385,6 +1431,7 @@
         applyStateToEditor(initialState);
         bindEditorEvents();
         renderPreview(getEditorState());
+        document.getElementById('resetButton').addEventListener('click', resetEditor);
 
         let publicConfig;
 
