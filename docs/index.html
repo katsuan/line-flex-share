@@ -297,6 +297,10 @@
         cursor: pointer;
         list-style: none;
         margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
       }
 
       .card-settings-accordion[open] > summary {
@@ -307,11 +311,11 @@
         display: none;
       }
 
-      .card-settings-accordion > summary::before {
+      .accordion-label::before {
         content: '▾ ';
       }
 
-      .card-settings-accordion:not([open]) > summary::before {
+      .card-settings-accordion:not([open]) > summary .accordion-label::before {
         content: '▸ ';
       }
 
@@ -595,6 +599,13 @@
         cursor: pointer;
       }
 
+      .button-secondary--inline {
+        width: auto;
+        flex: 0 0 auto;
+        padding: 6px 14px;
+        font-size: 12px;
+      }
+
       .note {
         margin-top: 12px;
         font-size: 12px;
@@ -620,7 +631,12 @@
       <section class="card">
         <div class="panel">
           <details class="section-block card-settings-accordion">
-            <summary class="section-title">カード設定</summary>
+            <summary class="section-title">
+              <span class="accordion-label">カード設定</span>
+              <button id="resetButton" class="button-secondary button-secondary--inline" type="button">
+                入力をリセット
+              </button>
+            </summary>
             <div class="field field--compact">
               <div class="field-head">
                 <label>サイズ</label>
@@ -699,26 +715,24 @@
             </div>
 
             <div class="field field--compact">
-              <label>表示設定</label>
-              <div class="toggle-row">
-                <label class="toggle">
-                  <input id="showDateToggle" type="checkbox" checked>
-                  サブタイトル
-                </label>
-                <label class="toggle">
-                  <input id="showDetailToggle" type="checkbox" checked>
-                  詳細
-                </label>
-                <label class="toggle">
-                  <input id="showActionToggle" type="checkbox">
-                  リンクボタン
-                </label>
+              <div class="field-head">
+                <label>表示設定</label>
+                <div class="toggle-row">
+                  <label class="toggle">
+                    <input id="showDateToggle" type="checkbox" checked>
+                    サブタイトル
+                  </label>
+                  <label class="toggle">
+                    <input id="showDetailToggle" type="checkbox" checked>
+                    詳細
+                  </label>
+                  <label class="toggle">
+                    <input id="showActionToggle" type="checkbox">
+                    リンクボタン
+                  </label>
+                </div>
               </div>
             </div>
-
-            <button id="resetButton" class="button-secondary" type="button">
-              入力をリセット
-            </button>
           </details>
         </div>
 
@@ -1480,7 +1494,11 @@
         applyStateToEditor(initialState);
         bindEditorEvents();
         renderPreview(getEditorState());
-        document.getElementById('resetButton').addEventListener('click', resetEditor);
+        document.getElementById('resetButton').addEventListener('click', (event) => {
+          event.preventDefault();
+          resetEditor();
+          document.querySelector('.card-settings-accordion').open = true;
+        });
         syncActionsBarSpacing();
         window.addEventListener('resize', () => {
           syncActionsBarSpacing();
