@@ -69,6 +69,13 @@
           linear-gradient(180deg, rgba(255, 251, 235, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%);
       }
 
+      .preview-note {
+        margin-top: 10px;
+        font-size: 11px;
+        line-height: 1.5;
+        color: rgba(120, 90, 40, 0.75);
+      }
+
       .bubble {
         border-radius: 28px;
         overflow: hidden;
@@ -186,6 +193,13 @@
         font-size: 12px;
         font-weight: 800;
         letter-spacing: 0.04em;
+      }
+
+      .section-note {
+        margin: -4px 0 12px;
+        font-size: 11px;
+        line-height: 1.5;
+        color: var(--muted, #78716c);
       }
 
       .section-title--light {
@@ -413,16 +427,17 @@
         justify-content: center;
         padding: 6px 12px;
         border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.26);
+        border: 1px solid rgba(120, 90, 40, 0.22);
+        background: rgba(255, 255, 255, 0.6);
         font-size: 12px;
         font-weight: 700;
-        color: rgba(255, 255, 255, 0.85);
+        color: rgba(120, 90, 40, 0.85);
       }
 
       .size-pill-option input:checked + span {
-        border-color: rgba(255, 255, 255, 0.6);
-        background: rgba(255, 255, 255, 0.2);
-        color: #ffffff;
+        border-color: #f59e0b;
+        background: rgba(245, 158, 11, 0.16);
+        color: #9a3412;
       }
 
       .sr-only {
@@ -505,176 +520,184 @@
               ></a>
             </div>
           </div>
+          <p class="preview-note">※ 見え方はイメージです。実際の表示はご利用端末やカードサイズによって異なります。</p>
         </div>
 
         <div class="panel">
           <div id="status" class="status"></div>
 
           <div class="grid">
-            <div id="headerSection" class="section-block section-block--header">
-              <div class="section-head">
-                <p class="section-title section-title--light">ヘッダー</p>
-                <div class="field field--compact">
-                  <div class="field-head">
-                    <label>カラー</label>
-                    <div
-                      id="themeSelect"
-                      class="theme-pills"
-                      role="radiogroup"
-                      aria-label="カラー"
-                    >
-                      <label class="theme-pill theme-pill--sunset">
-                        <input type="radio" name="theme" value="sunset" checked>
-                        <span aria-hidden="true"></span>
-                        <span class="sr-only">サンセット</span>
-                      </label>
-                      <label class="theme-pill theme-pill--sky">
-                        <input type="radio" name="theme" value="sky">
-                        <span aria-hidden="true"></span>
-                        <span class="sr-only">スカイ</span>
-                      </label>
-                      <label class="theme-pill theme-pill--leaf">
-                        <input type="radio" name="theme" value="leaf">
-                        <span aria-hidden="true"></span>
-                        <span class="sr-only">リーフ</span>
-                      </label>
-                      <label class="theme-pill theme-pill--berry">
-                        <input type="radio" name="theme" value="berry">
-                        <span aria-hidden="true"></span>
-                        <span class="sr-only">ベリー</span>
-                      </label>
-                    </div>
-                  </div>
-                  <div class="field-head">
-                    <label>サイズ</label>
-                    <div
-                      id="bubbleSizeSelect"
-                      class="size-pills"
-                      role="radiogroup"
-                      aria-label="サイズ"
-                    >
-                      <label class="size-pill-option">
-                        <input type="radio" name="bubbleSize" value="nano">
-                        <span>nano</span>
-                      </label>
-                      <label class="size-pill-option">
-                        <input type="radio" name="bubbleSize" value="micro">
-                        <span>micro</span>
-                      </label>
-                      <label class="size-pill-option">
-                        <input type="radio" name="bubbleSize" value="kilo">
-                        <span>kilo</span>
-                      </label>
-                      <label class="size-pill-option">
-                        <input type="radio" name="bubbleSize" value="mega">
-                        <span>mega</span>
-                      </label>
-                      <label class="size-pill-option">
-                        <input type="radio" name="bubbleSize" value="giga" checked>
-                        <span>giga</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="grid">
-                <div class="field">
-                  <div class="field-label-row">
-                    <label for="headerInput">タイトル</label>
-                    <div class="field-label-row">
-                      <div class="field-note">15文字以内が目安</div>
-                      <div id="headerCount" class="field-count">0 / 15</div>
-                    </div>
-                  </div>
-                  <input
-                    id="headerInput"
-                    class="input"
-                    type="text"
-                    value="みんなに共有"
-                    placeholder="タイトル"
-                  >
-                </div>
-
-                <div class="field">
-                  <div class="field-head">
-                    <label for="dateInput">サブタイトル</label>
-                    <label class="toggle toggle--light">
-                      <input id="showDateToggle" type="checkbox" checked>
-                      表示
-                    </label>
-                  </div>
-                  <input
-                    id="dateInput"
-                    class="input"
-                    type="text"
-                    placeholder="2026.08.12 共有メモ"
-                  >
-                </div>
-              </div>
-            </div>
-
             <div class="section-block">
-              <p class="section-title">本文</p>
-              <div class="grid">
-                <div class="field">
-                  <label for="titleInput">本文タイトル</label>
-                  <input
-                    id="titleInput"
-                    class="input"
-                    type="text"
-                    placeholder="共有したい内容"
+              <p class="section-title">カードサイズ</p>
+              <p class="section-note">トーク上でのカード全体の大きさです。ヘッダー・本文・リンクボタンはこのカードの中身です。</p>
+              <div class="field field--compact">
+                <div class="field-head">
+                  <label>サイズ</label>
+                  <div
+                    id="bubbleSizeSelect"
+                    class="size-pills"
+                    role="radiogroup"
+                    aria-label="サイズ"
                   >
-                </div>
-
-                <div class="field">
-                  <div class="field-head">
-                    <label for="detailInput">詳細</label>
-                    <label class="toggle">
-                      <input id="showDetailToggle" type="checkbox" checked>
-                      表示
+                    <label class="size-pill-option">
+                      <input type="radio" name="bubbleSize" value="nano">
+                      <span>nano</span>
+                    </label>
+                    <label class="size-pill-option">
+                      <input type="radio" name="bubbleSize" value="micro">
+                      <span>micro</span>
+                    </label>
+                    <label class="size-pill-option">
+                      <input type="radio" name="bubbleSize" value="kilo">
+                      <span>kilo</span>
+                    </label>
+                    <label class="size-pill-option">
+                      <input type="radio" name="bubbleSize" value="mega">
+                      <span>mega</span>
+                    </label>
+                    <label class="size-pill-option">
+                      <input type="radio" name="bubbleSize" value="giga" checked>
+                      <span>giga</span>
                     </label>
                   </div>
-                  <textarea
-                    id="detailInput"
-                    class="textarea"
-                    placeholder="補足やメッセージを入力"
-                  ></textarea>
                 </div>
               </div>
-            </div>
 
-            <div class="section-block">
-              <p class="section-title">リンクボタン</p>
-              <div class="grid">
-                <div class="field">
-                  <div class="field-head">
-                    <label for="actionUrlInput">URLボタン</label>
-                    <label class="toggle">
-                      <input id="showActionToggle" type="checkbox">
-                      表示
-                    </label>
+              <div id="headerSection" class="section-block section-block--header">
+                <div class="section-head">
+                  <p class="section-title section-title--light">ヘッダー</p>
+                  <div class="field field--compact">
+                    <div class="field-head">
+                      <label>カラー</label>
+                      <div
+                        id="themeSelect"
+                        class="theme-pills"
+                        role="radiogroup"
+                        aria-label="カラー"
+                      >
+                        <label class="theme-pill theme-pill--sunset">
+                          <input type="radio" name="theme" value="sunset" checked>
+                          <span aria-hidden="true"></span>
+                          <span class="sr-only">サンセット</span>
+                        </label>
+                        <label class="theme-pill theme-pill--sky">
+                          <input type="radio" name="theme" value="sky">
+                          <span aria-hidden="true"></span>
+                          <span class="sr-only">スカイ</span>
+                        </label>
+                        <label class="theme-pill theme-pill--leaf">
+                          <input type="radio" name="theme" value="leaf">
+                          <span aria-hidden="true"></span>
+                          <span class="sr-only">リーフ</span>
+                        </label>
+                        <label class="theme-pill theme-pill--berry">
+                          <input type="radio" name="theme" value="berry">
+                          <span aria-hidden="true"></span>
+                          <span class="sr-only">ベリー</span>
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-
-                <div id="actionFieldsWrap" class="grid hidden">
+                <div class="grid">
                   <div class="field">
-                    <label for="actionLabelInput">ボタン文言</label>
+                    <div class="field-label-row">
+                      <label for="headerInput">タイトル</label>
+                      <div class="field-label-row">
+                        <div class="field-note">15文字以内が目安</div>
+                        <div id="headerCount" class="field-count">0 / 15</div>
+                      </div>
+                    </div>
                     <input
-                      id="actionLabelInput"
+                      id="headerInput"
                       class="input"
                       type="text"
-                      placeholder="詳しく見る"
+                      value="みんなに共有"
+                      placeholder="タイトル"
                     >
                   </div>
 
                   <div class="field">
-                    <label for="actionUrlInput">URL</label>
+                    <div class="field-head">
+                      <label for="dateInput">サブタイトル</label>
+                      <label class="toggle toggle--light">
+                        <input id="showDateToggle" type="checkbox" checked>
+                        表示
+                      </label>
+                    </div>
                     <input
-                      id="actionUrlInput"
+                      id="dateInput"
                       class="input"
-                      type="url"
-                      placeholder="https://example.com"
+                      type="text"
+                      placeholder="2026.08.12 共有メモ"
                     >
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-block">
+                <p class="section-title">本文</p>
+                <div class="grid">
+                  <div class="field">
+                    <label for="titleInput">本文タイトル</label>
+                    <input
+                      id="titleInput"
+                      class="input"
+                      type="text"
+                      placeholder="共有したい内容"
+                    >
+                  </div>
+
+                  <div class="field">
+                    <div class="field-head">
+                      <label for="detailInput">詳細</label>
+                      <label class="toggle">
+                        <input id="showDetailToggle" type="checkbox" checked>
+                        表示
+                      </label>
+                    </div>
+                    <textarea
+                      id="detailInput"
+                      class="textarea"
+                      placeholder="補足やメッセージを入力"
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-block">
+                <p class="section-title">リンクボタン</p>
+                <div class="grid">
+                  <div class="field">
+                    <div class="field-head">
+                      <label for="actionUrlInput">URLボタン</label>
+                      <label class="toggle">
+                        <input id="showActionToggle" type="checkbox">
+                        表示
+                      </label>
+                    </div>
+                  </div>
+
+                  <div id="actionFieldsWrap" class="grid hidden">
+                    <div class="field">
+                      <label for="actionLabelInput">ボタン文言</label>
+                      <input
+                        id="actionLabelInput"
+                        class="input"
+                        type="text"
+                        placeholder="詳しく見る"
+                      >
+                    </div>
+
+                    <div class="field">
+                      <label for="actionUrlInput">URL</label>
+                      <input
+                        id="actionUrlInput"
+                        class="input"
+                        type="url"
+                        placeholder="https://example.com"
+                      >
+                    </div>
                   </div>
                 </div>
               </div>
@@ -683,7 +706,7 @@
 
           <div class="actions">
             <button id="shareButton" class="button" type="button">
-              LINEでFlexShareする
+              LINEで送信する
             </button>
           </div>
         </div>
@@ -1160,7 +1183,7 @@
               header: {
                 type: 'box',
                 layout: 'vertical',
-                backgroundColor: themeStartColor(state.theme),
+                background: themeGradient(state.theme),
                 paddingAll: '16px',
                 contents: headerContents
               },
@@ -1191,6 +1214,31 @@
           default:
             return '#F59E0B';
         }
+      }
+
+      function themeGradient(theme) {
+        // Flexのlinear-gradient角度はCSSのlinear-gradient(Xdeg, ...)と同じ向きなので、
+        // 画面プレビューのCSS(135deg, start 0%, end 100%)とそのまま揃えられる。
+        const colors = (() => {
+          switch (theme) {
+            case 'sky':
+              return { startColor: '#2563EB', endColor: '#06B6D4' };
+            case 'leaf':
+              return { startColor: '#16A34A', endColor: '#10B981' };
+            case 'berry':
+              return { startColor: '#E11D48', endColor: '#FB7185' };
+            case 'sunset':
+            default:
+              return { startColor: '#F59E0B', endColor: '#FB7185' };
+          }
+        })();
+
+        return {
+          type: 'linearGradient',
+          angle: '135deg',
+          startColor: colors.startColor,
+          endColor: colors.endColor
+        };
       }
 
       function bindEditorEvents() {
