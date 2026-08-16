@@ -109,9 +109,11 @@
         opacity: 0.4;
       }
 
-      .bubble-input:hover {
-        border-color: currentColor;
-        opacity: 0.85;
+      @media (hover: hover) {
+        .bubble-input:hover {
+          border-color: currentColor;
+          opacity: 0.85;
+        }
       }
 
       .bubble-input:focus {
@@ -294,6 +296,11 @@
       .card-settings-accordion > summary {
         cursor: pointer;
         list-style: none;
+        margin-bottom: 0;
+      }
+
+      .card-settings-accordion[open] > summary {
+        margin-bottom: 10px;
       }
 
       .card-settings-accordion > summary::-webkit-details-marker {
@@ -592,7 +599,7 @@
 
       <section class="card">
         <div class="panel">
-          <details class="section-block card-settings-accordion" open>
+          <details class="section-block card-settings-accordion">
             <summary class="section-title">カード設定</summary>
             <div class="field field--compact">
               <div class="field-head">
@@ -686,7 +693,7 @@
                 id="dateInput"
                 class="bubble-input bubble-header-date"
                 type="text"
-                placeholder="2026.08.12 共有メモ"
+                placeholder="サブタイトル"
               >
             </div>
             <div class="bubble-body">
