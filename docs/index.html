@@ -541,9 +541,28 @@
       }
 
       .actions {
-        margin-top: 16px;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 30;
+        background: rgba(255, 251, 235, 0.95);
+        backdrop-filter: blur(14px);
+        border-top: 1px solid var(--card-line);
+        box-shadow: 0 -10px 28px rgba(180, 83, 9, 0.14);
+        padding: 12px 18px calc(12px + env(safe-area-inset-bottom, 0px));
+      }
+
+      .actions-inner {
+        width: min(100%, 640px);
+        margin: 0 auto;
         display: grid;
         gap: 8px;
+      }
+
+      .actions-inner .status {
+        margin-bottom: 0;
+        text-align: center;
       }
 
       .button {
@@ -677,6 +696,24 @@
                 </div>
               </div>
             </div>
+
+            <div class="field field--compact">
+              <label>表示設定</label>
+              <div class="toggle-row">
+                <label class="toggle">
+                  <input id="showDateToggle" type="checkbox" checked>
+                  サブタイトル
+                </label>
+                <label class="toggle">
+                  <input id="showDetailToggle" type="checkbox" checked>
+                  詳細
+                </label>
+                <label class="toggle">
+                  <input id="showActionToggle" type="checkbox">
+                  リンクボタン
+                </label>
+              </div>
+            </div>
           </details>
         </div>
 
@@ -736,37 +773,21 @@
             </div>
           </div>
 
-          <div id="status" class="status"></div>
-
-          <div class="section-block">
-            <p class="section-title">表示設定</p>
-            <div class="toggle-row">
-              <label class="toggle">
-                <input id="showDateToggle" type="checkbox" checked>
-                サブタイトル
-              </label>
-              <label class="toggle">
-                <input id="showDetailToggle" type="checkbox" checked>
-                詳細
-              </label>
-              <label class="toggle">
-                <input id="showActionToggle" type="checkbox">
-                リンクボタン
-              </label>
-            </div>
-          </div>
-
-          <div class="actions">
-            <button id="resetButton" class="button-secondary" type="button">
-              入力をリセット
-            </button>
-            <button id="shareButton" class="button" type="button">
-              LINEで送信する
-            </button>
-          </div>
         </div>
       </section>
     </main>
+
+    <div class="actions">
+      <div class="actions-inner">
+        <button id="resetButton" class="button-secondary" type="button">
+          入力をリセット
+        </button>
+        <div id="status" class="status"></div>
+        <button id="shareButton" class="button" type="button">
+          LINEで送信する
+        </button>
+      </div>
+    </div>
 
     <script>
       const STORAGE_KEY = 'flexshare:lastSentState';
@@ -1081,10 +1102,16 @@
         }
       }
 
+      function syncActionsBarSpacing() {
+        const actions = document.querySelector('.actions');
+        document.body.style.paddingBottom = `${actions.offsetHeight}px`;
+      }
+
       function setStatus(message, isError) {
         const status = document.getElementById('status');
         status.textContent = message || '';
         status.className = isError ? 'status error' : 'status';
+        syncActionsBarSpacing();
       }
 
       function getValidationMessage(state) {
@@ -1097,11 +1124,11 @@
         }
 
         if (state.showDate !== false && !state.date) {
-          return 'サブタイトルを入力してください。';
+          return 'サブタイトルを入力するか、表示設定でOFFにしてください。';
         }
 
         if (state.showDetail !== false && !state.detail) {
-          return '詳細を入力してください。';
+          return '詳細を入力するか、表示設定でOFFにしてください。';
         }
 
         if (state.showAction === true) {
@@ -1159,6 +1186,11 @@
         element.style.height = `${element.scrollHeight}px`;
       }
 
+      function autoGrowAllTextareas() {
+        autoGrowTextarea(document.getElementById('titleInput'));
+        autoGrowTextarea(document.getElementById('detailInput'));
+      }
+
       function renderPreview(state) {
         const palette = getThemePalette(state);
         document.body.style.background = palette.pageBg;
@@ -1177,8 +1209,7 @@
         updateFieldVisibility(state);
         updateShareButtonState(state);
 
-        autoGrowTextarea(document.getElementById('titleInput'));
-        autoGrowTextarea(detailInput);
+        autoGrowAllTextareas();
       }
 
       function buildAltText(state) {
@@ -1450,6 +1481,15 @@
         bindEditorEvents();
         renderPreview(getEditorState());
         document.getElementById('resetButton').addEventListener('click', resetEditor);
+        syncActionsBarSpacing();
+        window.addEventListener('resize', () => {
+          syncActionsBarSpacing();
+          autoGrowAllTextareas();
+        });
+        requestAnimationFrame(() => {
+          autoGrowAllTextareas();
+          syncActionsBarSpacing();
+        });
 
         let publicConfig;
 
