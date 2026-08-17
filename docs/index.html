@@ -615,6 +615,66 @@
           grid-template-columns: 1fr;
         }
       }
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(66, 32, 6, 0.45);
+      }
+
+      .modal-overlay.hidden {
+        display: none;
+      }
+
+      .modal-dialog {
+        width: 100%;
+        max-width: 340px;
+        border-radius: 20px;
+        padding: 22px 20px;
+        background: var(--card-bg);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--card-line);
+      }
+
+      .modal-title {
+        margin: 0 0 8px;
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--ink);
+      }
+
+      .modal-body {
+        margin: 0 0 14px;
+        font-size: 13px;
+        line-height: 1.7;
+        color: var(--sub);
+      }
+
+      .modal-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 18px;
+        font-size: 13px;
+        color: var(--sub);
+      }
+
+      .modal-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .modal-actions .button,
+      .modal-actions .button-secondary {
+        width: 100%;
+        margin: 0;
+      }
     </style>
   </head>
   <body>
@@ -787,6 +847,7 @@
           </div>
 
           <p class="preview-note">※ 見え方はイメージです。実際の表示はご利用端末やカードサイズによって異なります。</p>
+          <p class="preview-note">※ 送信後の修正はできません。内容をご確認のうえ送信してください。</p>
         </div>
       </section>
     </main>
@@ -800,8 +861,24 @@
       </div>
     </div>
 
+    <div id="sendWarningModal" class="modal-overlay hidden">
+      <div class="modal-dialog" role="alertdialog" aria-modal="true" aria-labelledby="sendWarningTitle">
+        <p id="sendWarningTitle" class="modal-title">送信前の確認</p>
+        <p class="modal-body">送信後の修正はできません。内容をご確認のうえ送信してください。</p>
+        <label class="modal-checkbox">
+          <input id="sendWarningDontShow" type="checkbox">
+          以降表示しない
+        </label>
+        <div class="modal-actions">
+          <button id="sendWarningCancel" class="button-secondary" type="button">キャンセル</button>
+          <button id="sendWarningConfirm" class="button" type="button">送信する</button>
+        </div>
+      </div>
+    </div>
+
     <script>
       const STORAGE_KEY = 'flexshare:lastSentState';
+      const SEND_WARNING_DISMISSED_KEY = 'flexshare:sendWarningDismissed';
       const DEFAULT_HEADER_TITLE = 'タイトル';
       let shouldSuppressActionOnShare = false;
       let shareEnvironmentReady = false;
@@ -1441,6 +1518,54 @@
         });
       }
 
+      function shouldSkipSendWarning() {
+        try {
+          return window.localStorage.getItem(SEND_WARNING_DISMISSED_KEY) === 'true';
+        } catch (error) {
+          return false;
+        }
+      }
+
+      function confirmSendWarning() {
+        if (shouldSkipSendWarning()) {
+          return Promise.resolve(true);
+        }
+
+        const overlay = document.getElementById('sendWarningModal');
+        const dontShowCheckbox = document.getElementById('sendWarningDontShow');
+        const confirmButton = document.getElementById('sendWarningConfirm');
+        const cancelButton = document.getElementById('sendWarningCancel');
+
+        return new Promise((resolve) => {
+          function close(result) {
+            overlay.classList.add('hidden');
+            confirmButton.removeEventListener('click', onConfirm);
+            cancelButton.removeEventListener('click', onCancel);
+            resolve(result);
+          }
+
+          function onConfirm() {
+            if (dontShowCheckbox.checked) {
+              try {
+                window.localStorage.setItem(SEND_WARNING_DISMISSED_KEY, 'true');
+              } catch (error) {
+                // localStorage が使えない場合は毎回表示する
+              }
+            }
+            close(true);
+          }
+
+          function onCancel() {
+            close(false);
+          }
+
+          dontShowCheckbox.checked = false;
+          confirmButton.addEventListener('click', onConfirm);
+          cancelButton.addEventListener('click', onCancel);
+          overlay.classList.remove('hidden');
+        });
+      }
+
       async function shareFlexMessage() {
         if (!window.liff) {
           setStatus('LIFF SDK を読み込めませんでした。', true);
@@ -1449,6 +1574,13 @@
 
         if (!liff.isApiAvailable('shareTargetPicker')) {
           setStatus('LINE アプリ内で開いてください。', true);
+          return;
+        }
+
+        const confirmed = await confirmSendWarning();
+
+        if (!confirmed) {
+          setStatus('送信をキャンセルしました。', false);
           return;
         }
 
