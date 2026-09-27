@@ -267,6 +267,13 @@
         color: #b91c1c;
       }
 
+      .field-warning {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.6;
+        color: #b91c1c;
+      }
+
       .grid {
         display: grid;
         gap: 12px;
@@ -843,6 +850,9 @@
                 type="url"
                 placeholder="https://example.com"
               >
+              <p id="actionUrlWarning" class="field-warning hidden">
+                ※ 外部から渡されたリンクのため、許可されたサイト以外は送信時にボタンごと外れます。
+              </p>
             </div>
           </div>
 
@@ -880,7 +890,8 @@
       const STORAGE_KEY = 'flexshare:lastSentState';
       const SEND_WARNING_DISMISSED_KEY = 'flexshare:sendWarningDismissed';
       const DEFAULT_HEADER_TITLE = 'タイトル';
-      let shouldSuppressActionOnShare = false;
+      const ALLOWED_ACTION_HOSTS = ['katsuan.github.io'];
+      let isActionUrlFromQuery = false;
       let shareEnvironmentReady = false;
       let lastBuiltShareMessages = null;
 
@@ -975,8 +986,6 @@
         const params = new URLSearchParams(window.location.search);
 
         return {
-          hasIncomingActionParam:
-            params.has('actionUrl') || params.has('url') || params.has('buttonLabel'),
           theme: String(params.get('theme') || 'sunset').trim(),
           headerTitle: String(params.get('headerTitle') || '').trim(),
           date: String(params.get('date') || '').trim(),
@@ -1107,17 +1116,6 @@
         );
       }
 
-      function hasUrlDrivenContent(state) {
-        return Boolean(
-          state.title
-          || state.detail
-          || state.date
-          || state.actionLabel
-          || state.actionUrl
-          || state.hasIncomingActionParam
-        );
-      }
-
       function sanitizeUrl(url) {
         const trimmedUrl = String(url || '').trim();
 
@@ -1136,6 +1134,22 @@
         } catch (error) {
           return '';
         }
+      }
+
+      function isAllowedActionHost(url) {
+        try {
+          const hostname = new URL(url).hostname;
+
+          return ALLOWED_ACTION_HOSTS.some(
+            (host) => hostname === host || hostname.endsWith(`.${host}`)
+          );
+        } catch (error) {
+          return false;
+        }
+      }
+
+      function isActionUrlBlocked(actionUrl) {
+        return Boolean(actionUrl) && isActionUrlFromQuery && !isAllowedActionHost(actionUrl);
       }
 
       function getActionLabel(state) {
@@ -1267,6 +1281,13 @@
 
         actionFieldsWrap.classList.toggle('hidden', state.showAction !== true);
         document.getElementById('actionUrlInput').disabled = state.showAction !== true;
+
+        const actionUrlWarning = document.getElementById('actionUrlWarning');
+        const actionUrl = sanitizeUrl(state.actionUrl);
+        actionUrlWarning.classList.toggle(
+          'hidden',
+          state.showAction !== true || !isActionUrlBlocked(actionUrl)
+        );
       }
 
       function autoGrowTextarea(element) {
@@ -1362,7 +1383,7 @@
 
         const actionUrl = sanitizeUrl(state.actionUrl);
 
-        if (state.showAction === true && actionUrl && !shouldSuppressActionOnShare) {
+        if (state.showAction === true && actionUrl && !isActionUrlBlocked(actionUrl)) {
           bodyContents.push({
             type: 'button',
             style: 'primary',
@@ -1615,7 +1636,7 @@
       async function init() {
         const shareButton = document.getElementById('shareButton');
         const queryState = getQueryState();
-        shouldSuppressActionOnShare = hasUrlDrivenContent(queryState);
+        isActionUrlFromQuery = Boolean(queryState.actionUrl);
         const initialState = hasQueryOverrides(queryState)
           ? queryState
           : (loadLastSentState() || queryState);
